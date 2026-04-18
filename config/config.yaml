@@ -1,5 +1,5 @@
 model:
-  name: "llama3.2:latest"
+  name: "gpt-oss:120b"
   temperature: 0.8
   seed: 42
   #num_ctx: 131072

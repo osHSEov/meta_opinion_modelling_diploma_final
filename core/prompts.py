@@ -2,6 +2,7 @@ from typing import Optional
 
 
 def build_system_prompt() -> str:
+    # Оставляем как есть — генератору диалогов полезно знать контекст задачи
     return (
         "You are a world-class expert in epistemic logic and synthetic dataset generation "
         "for benchmarks on extracting beliefs and meta-beliefs from text."
@@ -20,8 +21,11 @@ Exactly {num_agents} agents participate.
 Maximum nesting depth of B-operators: {max_depth}.
 Number of atomic propositions: from {min_props} to {max_props}.
 
-Generate a realistic dialogue that is **different** from typical patterns. Vary the agents' perspectives, the set of atomic propositions, and the structure of beliefs. 
-and return ONLY valid JSON.
+Generate a realistic, everyday dialogue that sounds like a natural conversation from social media,
+a forum, or a group chat. Avoid academic or overly formal language. Vary the agents' perspectives,
+the set of atomic propositions, and the structure of beliefs.
+
+Return ONLY valid JSON.
 
 STRICT RULES:
 • agents — exactly {num_agents} unique names.
@@ -62,17 +66,29 @@ Now generate the data strictly according to the parameters and output **ONLY** t
 
 def build_topic_system_prompt() -> str:
     return (
-        "You are a world-class expert at generating diverse, high-quality topics "
-        "for epistemic logic and meta-opinion benchmarks."
+        "You are a world-class expert at generating diverse, high-quality discussion topics "
+        "that appear in everyday conversations, social media debates, and news headlines. "
+        "Topics should be drawn from a wide range of areas: politics, sports, entertainment, "
+        "technology, health, environment, economy, lifestyle, education, and more."
     )
 
 
 def build_topic_user_prompt(num_topics: int = 20) -> str:
     return f"""Generate exactly {num_topics} diverse, realistic, and opinion-provoking topics 
-that are perfect for discussions involving beliefs, meta-beliefs, and epistemic logic in social networks.
+that people commonly debate on social networks, forums, or in casual chats.
 
-Topics should cover technology, society, ethics, politics, science, environment, etc.
-Make them controversial or debatable but not offensive.
+Cover a broad mix of domains, for example:
+- Politics: elections, policies, international affairs
+- Sports: team rivalries, rule changes, athlete compensation
+- Technology: AI, privacy, social media impact
+- Entertainment: movies, music, celebrity culture
+- Lifestyle: remote work, diets, parenting
+- Health: vaccines, mental health, fitness trends
+- Environment: climate change, renewable energy, conservation
+- Economy: inflation, cryptocurrency, gig work
+
+Make the topics controversial or debatable but not offensive. Avoid academic jargon 
+and words like "epistemic", "modal logic", or "ontology".
 
 Output **ONLY** valid JSON in this exact format:
 {{
