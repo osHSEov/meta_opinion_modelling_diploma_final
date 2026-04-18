@@ -1,0 +1,19 @@
+model:
+  name: "llama3.2:latest"
+  temperature: 0.8
+  seed: 42
+  #num_ctx: 131072
+
+generation:
+  max_depth: 3
+  num_agents: 3
+  min_props: 2
+  max_props: 5
+  samples_per_topic: 10
+  num_topics: 20
+  max_retries: 3
+
+
+output:
+  file: "meta_opinions_dataset.jsonl"
+  append: false
