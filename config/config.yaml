@@ -13,7 +13,9 @@ generation:
   num_topics: 20
   max_retries: 3
 
-
+# Output configuration
+# Set append: true to add new samples to existing dataset
+# Set append: false to overwrite the dataset
 output:
   file: "meta_opinions_dataset.jsonl"
-  append: false
+  append: true

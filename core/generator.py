@@ -1,7 +1,7 @@
 import hashlib
 from typing import Optional, List
 
-from .models import SyntheticSample
+from .models import SyntheticSample, validate_formulas_match_text
 from .prompts import (
     build_system_prompt,
     build_user_prompt,
@@ -74,11 +74,18 @@ class MetaOpinionDatasetGenerator:
         ):
             return False
 
-        return (
+        if not (
             len(parsed["agents"]) == self.config["num_agents"]
             and self.config["min_props"] <= len(parsed["propositions"]) <= self.config["max_props"]
             and len(parsed["formulas"]) > 0
-        )
+        ):
+            return False
+
+        # Additional validation: formulas must match text agents
+        if not validate_formulas_match_text(parsed["formulas"], parsed["text"]):
+            return False
+
+        return True
 
     def generate_sample(self, topic: str) -> Optional[SyntheticSample]:
         prompt = build_user_prompt(

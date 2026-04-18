@@ -28,7 +28,7 @@ the set of atomic propositions, and the structure of beliefs.
 Return ONLY valid JSON.
 
 STRICT RULES:
-• agents — exactly {num_agents} unique names.
+• agents — exactly {num_agents} unique names (use common names like Alex, Maya, Jordan, Sam, Taylor, Robin).
 • propositions — list of {min_props}-{max_props} clear atomic statements (in English).
   In formulas they will be referenced as p1, p2, … (p1 = propositions[0], etc.).
 • formulas — ALL beliefs and meta-beliefs actually expressed in the dialogue.
@@ -40,8 +40,14 @@ STRICT RULES:
   Maximum nesting depth ≤ {max_depth}. Must include at least one formula with depth exactly {max_depth}.
 • text — natural dialogue in the format:
   "Agent1: statement...\nAgent2: statement..."
-  The dialogue must clearly express ALL formulas from the list.
+  IMPORTANT: Every formula must be directly expressed by someone in the dialogue.
+  The agent name in B_Agent(X) must match a speaker in the text.
 • depth — maximum nesting depth of any B-operator in the formulas list (integer).
+
+CHECKLIST before final output:
+1. Each formula's agent appears as a speaker in the text
+2. The formula depth matches the "depth" field
+3. All formulas are actually expressed in the dialogue text
 
 EXAMPLE (use as template only):
 
