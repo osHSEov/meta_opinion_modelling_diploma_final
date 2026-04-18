@@ -23,6 +23,16 @@ real_generation:
   num_topics: 10
   max_retries: 5
 
+# Mafia game data settings
+mafia_generation:
+  max_depth: 1
+  num_agents: 7  # Full 7-player mafia games
+  min_props: 2
+  max_props: 5
+  samples_per_topic: 1
+  num_topics: 100
+  max_retries: 3
+
 # Output configuration
 # Set append: true to add new samples to existing dataset
 # Set append: false to overwrite the dataset
