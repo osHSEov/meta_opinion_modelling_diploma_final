@@ -104,31 +104,92 @@ Do not add any extra text.
 """
 
 def build_extraction_prompt(text: str) -> str:
-    return f"""Extract structured belief information from the following dialogue.
+    example1_input = """Alex: I really think that lowering the voting age to 16 would boost youth political engagement.
+Alex: Honestly, I don't think sixteen‑year‑olds are mature enough to make informed decisions.
+Maya: I agree with you, Alex, that lowering the age would increase engagement.
+Maya: I also believe Alex believes that lowering the voting age will boost engagement.
+Maya: I don't think they're mature enough either, so I believe that's false.
+Jordan: From what I've read, countries that lower the voting age see higher voter turnout overall.
+Jordan: I don't even believe that sixteen‑year‑olds are mature enough.
+Jordan: I think Maya believes that Alex believes the engagement claim."""
+    example1_output = {
+        "agents": ["Alex", "Maya", "Jordan"],
+        "propositions": [
+            "Lowering the voting age to 16 would increase youth political engagement.",
+            "Sixteen‑year‑olds are mature enough to make informed voting decisions.",
+            "Countries that lower the voting age see higher voter turnout overall."
+        ],
+        "formulas": [
+            "B_Alex(p1)",
+            "B_Alex(¬p2)",
+            "B_Maya(p1)",
+            "B_Maya(¬p2)",
+            "B_Maya(B_Alex(p1))",
+            "B_Jordan(p3)",
+            "¬B_Jordan(p2)",
+            "B_Jordan(B_Maya(B_Alex(p1)))"
+        ],
+        "depth": 3
+    }
 
-Return ONLY valid JSON with the following fields:
-- agents: list of unique speaker names
-- propositions: list of atomic statements (p1, p2, ...)
-- formulas: all beliefs and meta-beliefs expressed in the dialogue using modal logic:
-  Examples:
-  - B_Alice(p1)
-  - B_Bob(B_Alice(p2))
-  - ¬B_Carol(p1)
-- depth: maximum nesting depth of B-operators
+    example2_input = """Mike: Honestly, I think it's totally fair that athletes get those multi‑million contracts. They generate a lot of economic revenue for the league.
+Jenna: I don't think it's fair. Fans are already paying crazy ticket prices to watch games.
+Luis: I believe Jenna thinks Mike believes it's fair.
+Luis: And I think Mike doesn't think other professions deserve higher wages than athletes."""
+    example2_output = {
+        "agents": ["Mike", "Jenna", "Luis"],
+        "propositions": [
+            "It is fair that professional athletes receive multi‑million dollar contracts.",
+            "Fans pay high ticket prices to watch games.",
+            "Athletes generate significant economic revenue.",
+            "Other professions deserve higher wages than athletes."
+        ],
+        "formulas": [
+            "B_Mike(p1)",
+            "B_Mike(p3)",
+            "B_Jenna(p2)",
+            "¬B_Jenna(p1)",
+            "B_Luis(B_Jenna(B_Mike(p1)))",
+            "B_Luis(¬B_Mike(p4))"
+        ],
+        "depth": 3
+    }
 
-STRICT RULES:
-• Agent names must match speakers in the dialogue
-• Every formula must be grounded in the text
-• depth must match the deepest formula
+    import json
+    ex1_json = json.dumps(example1_output, indent=2)
+    ex2_json = json.dumps(example2_output, indent=2)
 
+    return f"""You are an expert in epistemic modal logic. Extract beliefs from the dialogue.
+
+Output a JSON object with:
+- "agents": list of unique speaker names.
+- "propositions": list of the full English statements (exact wording from the dialogue, NOT "p1" placeholders).
+- "formulas": list of belief formulas using B_Agent(pX) notation. Index X starts from 1 (p1 = first proposition).
+- "depth": maximum nesting depth of B-operators (integer).
+
+IMPORTANT:
+- Propositions must be the original English sentences.
+- Use "¬" for negation.
+- Formulas refer to propositions by their 1‑based index: p1, p2, p3, ...
+
+Examples:
+
+Example 1:
+Dialogue:
+{example1_input}
+
+Output:
+{ex1_json}
+
+Example 2:
+Dialogue:
+{example2_input}
+
+Output:
+{ex2_json}
+
+Now process:
 Dialogue:
 {text}
 
-Output format:
-{{
-  "agents": [...],
-  "propositions": [...],
-  "formulas": [...],
-  "depth": N
-}}
-"""
+JSON output:"""
