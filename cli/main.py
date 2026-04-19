@@ -8,7 +8,6 @@ from utils.io import save_jsonl
 
 
 def load_existing_ids(path: str) -> set:
-    """Load existing sample IDs from dataset to avoid duplicates."""
     existing_ids = set()
     if os.path.exists(path):
         try:
@@ -24,7 +23,6 @@ def load_existing_ids(path: str) -> set:
 
 
 def save_checkpoint(path: str, existing_ids: set, count: int, current_topic_idx: int):
-    """Save progress checkpoint."""
     checkpoint_path = path + ".checkpoint"
     with open(checkpoint_path, "w", encoding="utf-8") as f:
         json.dump({
@@ -35,7 +33,6 @@ def save_checkpoint(path: str, existing_ids: set, count: int, current_topic_idx:
 
 
 def load_checkpoint(path: str):
-    """Load progress checkpoint. Returns (existing_ids, count, topic_idx)."""
     checkpoint_path = path + ".checkpoint"
     if os.path.exists(checkpoint_path):
         try:
@@ -48,7 +45,6 @@ def load_checkpoint(path: str):
 
 
 def cleanup_checkpoint(path: str):
-    """Remove checkpoint file after successful completion."""
     checkpoint_path = path + ".checkpoint"
     if os.path.exists(checkpoint_path):
         os.remove(checkpoint_path)
@@ -64,14 +60,11 @@ def main():
     output_path = config["output"]["file"]
     append_mode = config["output"].get("append", False)
 
-    # Ensure directory exists
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
 
-    # Load checkpoint or existing IDs
     existing_ids, saved_count, start_topic_idx = load_checkpoint(output_path)
 
     if append_mode:
-        # In append mode, load existing IDs but don't overwrite
         existing_ids = load_existing_ids(output_path)
         print(f"Append mode: Found {len(existing_ids)} existing samples")
     elif start_topic_idx > 0:
@@ -86,7 +79,6 @@ def main():
     samples_buffer = []
 
     for i, topic in enumerate(topics, 1):
-        # Skip topics we've already processed (checkpoint resume)
         if i < start_topic_idx:
             continue
 
@@ -106,17 +98,13 @@ def main():
                 if count % 5 == 0:
                     save_checkpoint(output_path, existing_ids, count, i)
 
-        # Save progress after each topic (append mode for existing data)
         if samples_buffer:
-            # If not append mode and this is first batch, write new file
             first_save = count == len(samples_buffer)
             save_jsonl(output_path, samples_buffer, append=not first_save)
             samples_buffer = []
 
-        # Save checkpoint after each topic
         save_checkpoint(output_path, existing_ids, count, i)
 
-    # Cleanup checkpoint
     cleanup_checkpoint(output_path)
     print(f"Dataset update: {count} total samples, {skipped} duplicates skipped → {output_path}")
 

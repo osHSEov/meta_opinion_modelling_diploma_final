@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import List, Dict
 import re
 
@@ -19,7 +19,6 @@ class SyntheticSample:
 
 
 def validate_formulas_match_text(formulas: List[str], text: str) -> bool:
-    """Check that formulas can be reasonably inferred from the text."""
     text_lower = text.lower()
     formula_agents = set()
     for formula in formulas:
@@ -38,7 +37,6 @@ def validate_formulas_match_text(formulas: List[str], text: str) -> bool:
 
 
 def count_nesting_depth(formula: str) -> int:
-    """Count the maximum nesting depth of B-operators in a formula."""
     max_depth = 0
     current_depth = 0
     for char in formula:
@@ -51,7 +49,6 @@ def count_nesting_depth(formula: str) -> int:
 
 
 def validate_formula_depth(formulas: List[str], expected_depth: int) -> bool:
-    """Validate that formulas have the expected nesting depth."""
     for formula in formulas:
         depth = count_nesting_depth(formula)
         if depth != expected_depth:

@@ -11,12 +11,15 @@ def main():
                         help="Model name to evaluate (e.g. gpt-oss:120b)")
     parser.add_argument("--temperature", type=float, default=0.0,
                         help="Sampling temperature for the model")
+    parser.add_argument("--sample_random", type=int, default=None,
+                    help="Randomly sample N examples from dataset")
     args = parser.parse_args()
 
     scores = evaluate_dataset(
         dataset_path=args.dataset,
         model_name=args.model,
         temperature=args.temperature,
+        sample_random=args.sample_random,
     )
     print(json.dumps(scores, indent=2))
 

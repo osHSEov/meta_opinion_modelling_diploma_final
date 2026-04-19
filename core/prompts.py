@@ -2,7 +2,6 @@ from typing import Optional
 
 
 def build_system_prompt() -> str:
-    # Оставляем как есть — генератору диалогов полезно знать контекст задачи
     return (
         "You are a world-class expert in epistemic logic and synthetic dataset generation "
         "for benchmarks on extracting beliefs and meta-beliefs from text."
@@ -102,4 +101,34 @@ Output **ONLY** valid JSON in this exact format:
 }}
 
 Do not add any extra text.
+"""
+
+def build_extraction_prompt(text: str) -> str:
+    return f"""Extract structured belief information from the following dialogue.
+
+Return ONLY valid JSON with the following fields:
+- agents: list of unique speaker names
+- propositions: list of atomic statements (p1, p2, ...)
+- formulas: all beliefs and meta-beliefs expressed in the dialogue using modal logic:
+  Examples:
+  - B_Alice(p1)
+  - B_Bob(B_Alice(p2))
+  - ¬B_Carol(p1)
+- depth: maximum nesting depth of B-operators
+
+STRICT RULES:
+• Agent names must match speakers in the dialogue
+• Every formula must be grounded in the text
+• depth must match the deepest formula
+
+Dialogue:
+{text}
+
+Output format:
+{{
+  "agents": [...],
+  "propositions": [...],
+  "formulas": [...],
+  "depth": N
+}}
 """
