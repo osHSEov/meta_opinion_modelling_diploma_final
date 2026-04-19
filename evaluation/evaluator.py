@@ -10,6 +10,9 @@ from core.models import SyntheticSample
 from tqdm import tqdm
 import random
 
+from sentence_transformers import SentenceTransformer, util
+
+
 def normalize_formula(f: str) -> str:
     f = f.replace(" ", "")
     f = f.replace("¬", "NOT_")
@@ -70,12 +73,53 @@ def score_lists(gt: List[str], pred: List[str]) -> Tuple[float, float, float]:
 
     return precision, recall, f1
 
+def fuzzy_score_propositions(
+    gt_props: List[str],
+    pred_props: List[str],
+    model: SentenceTransformer,
+    threshold: float = 0.7
+) -> Tuple[float, float, float]:
+    
+    if not gt_props and not pred_props:
+        return 1.0, 1.0, 1.0
+    if not gt_props or not pred_props:
+        return 0.0, 0.0, 0.0
+
+    gt_emb = model.encode(gt_props, convert_to_tensor=True)
+    pred_emb = model.encode(pred_props, convert_to_tensor=True)
+
+    sim_matrix = util.cos_sim(gt_emb, pred_emb).cpu().numpy()
+
+    matched_gt = set()
+    matched_pred = set()
+
+    for i in range(len(gt_props)):
+        best_j = -1
+        best_sim = 0.0
+        for j in range(len(pred_props)):
+            if j in matched_pred:
+                continue
+            sim = sim_matrix[i, j]
+            if sim > best_sim:
+                best_sim = sim
+                best_j = j
+        if best_sim >= threshold:
+            matched_gt.add(i)
+            matched_pred.add(best_j)
+
+    tp = len(matched_gt)
+    precision = tp / len(pred_props)
+    recall = tp / len(gt_props)
+    f1 = (2 * precision * recall) / (precision + recall) if (precision + recall) else 0.0
+    return precision, recall, f1
+
 def evaluate_dataset(
     dataset_path: str,
     model_name: str,
     temperature: float = 0.0,
     max_retries: int = 2,
     sample_random: int = None,
+    fuzzy_threshold: float = 0.7
 ) -> Dict[str, float]:
 
     client = OllamaClient({
@@ -88,6 +132,8 @@ def evaluate_dataset(
     if sample_random is not None:
         samples = random.sample(samples, min(sample_random, len(samples)))
     total = len(samples)
+    
+    st_model = SentenceTransformer('all-MiniLM-L6-v2')
 
     agg = {
         "agents_f1": 0.0,
@@ -113,8 +159,11 @@ def evaluate_dataset(
         
         gt_props = normalize_list(gt["propositions"])
         pred_props = normalize_list(pred.get("propositions", []))
-        _, _, f = score_lists(gt_props, pred_props)
-        agg["props_f1"] += f
+        if success and pred_props:
+            _, _, f_props = fuzzy_score_propositions(gt_props, pred_props, st_model, threshold=fuzzy_threshold)
+        else:
+            f_props = 0.0
+        agg["props_f1"] += f_props
 
         
         gt_formulas = [normalize_formula(f) for f in gt["formulas"]]
