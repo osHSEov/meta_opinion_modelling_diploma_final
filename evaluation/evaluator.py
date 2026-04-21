@@ -96,35 +96,31 @@ def fuzzy_score_propositions(
 ) -> Tuple[float, float, float, Dict[int, int]]:
     
     if not gt_props and not pred_props:
-        return 1.0, 1.0, 1.0
+        return 1.0, 1.0, 1.0, {}
     if not gt_props or not pred_props:
-        return 0.0, 0.0, 0.0
+        return 0.0, 0.0, 0.0, {}
 
     gt_emb = model.encode(gt_props, convert_to_tensor=True)
     pred_emb = model.encode(pred_props, convert_to_tensor=True)
 
     sim_matrix = util.cos_sim(gt_emb, pred_emb).cpu().numpy()
+    
+    cost_matrix = -sim_matrix
+    row_ind, col_ind = linear_sum_assignment(cost_matrix)
 
     matched_gt = set()
     matched_pred = set()
     mapping = {}
 
-    for i in range(len(gt_props)):
-        best_j = -1
-        best_sim = 0.0
-        for j in range(len(pred_props)):
-            if j in matched_pred:
-                continue
-            sim = sim_matrix[i, j]
-            if sim > best_sim:
-                best_sim = sim
-                best_j = j
-        if best_sim >= threshold:
+    for i, j in zip(row_ind, col_ind):
+        sim = sim_matrix[i, j]
+        if sim >= threshold:
             matched_gt.add(i)
-            matched_pred.add(best_j)
-            mapping[best_j] = i
+            matched_pred.add(j)
+            mapping[j] = i 
 
     tp = len(matched_gt)
+    
     precision = tp / len(pred_props)
     recall = tp / len(gt_props)
     f1 = (2 * precision * recall) / (precision + recall) if (precision + recall) else 0.0
