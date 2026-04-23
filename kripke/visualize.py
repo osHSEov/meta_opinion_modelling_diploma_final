@@ -1,44 +1,64 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from kripke.model import KripkeModel
 
-def draw_kripke_model(model: KripkeModel, title: str = "Kripke Model", save_path: str = None):
+def draw_kripke_model(model, title="Kripke Model", save_path=None):
     G = nx.MultiDiGraph()
+
     for w in model.worlds:
-        true_props = sorted([f"p{i}" for i in model.valuation.get(w, set())])
-        label = f"w{w}\n{','.join(true_props) if true_props else '∅'}"
+        props = sorted([f"p{i}" for i in model.valuation.get(w, set())])
+        label = f"w{w}\n{','.join(props) if props else '∅'}"
         G.add_node(w, label=label)
 
     agent_colors = {agent: plt.cm.tab10(i) for i, agent in enumerate(model.agents)}
 
     for agent in model.agents:
         for (u, v) in model.relations[agent]:
-            G.add_edge(u, v, agent=agent, color=agent_colors[agent])
+            G.add_edge(u, v, agent=agent)
 
     pos = nx.spring_layout(G, seed=42, k=2, iterations=50)
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_color='lightblue', node_size=2000)
+    plt.figure(figsize=(12, 9))
 
-    labels = nx.get_node_attributes(G, 'label')
-    nx.draw_networkx_labels(G, pos, labels, ax=ax, font_size=10)
+    nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=2200)
 
-    legend_handles = []
     for agent, color in agent_colors.items():
-        edges = [(u, v) for (u, v, data) in G.edges(data=True) if data.get('agent') == agent]
-        if edges:
-            nx.draw_networkx_edges(G, pos, ax=ax, edgelist=edges, edge_color=color, alpha=0.7,
-                                   connectionstyle='arc3,rad=0.1', arrows=True,
-                                   arrowstyle='->', arrowsize=15)
-        legend_handles.append(
-            Line2D([0], [0], color=color, lw=2, label=agent)
+        edges = [(u, v) for (u, v, d) in G.edges(data=True) if d['agent'] == agent]
+
+        nx.draw_networkx_edges(
+            G,
+            pos,
+            edgelist=edges,
+            edge_color=[color],
+            width=2.5,              
+            alpha=0.9,
+            arrows=True,
+            arrowstyle='-|>',       
+            arrowsize=25,           
+            connectionstyle='arc3,rad=0.2', 
+            min_source_margin=25,
+            min_target_margin=25
         )
 
-    ax.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 1))
-    ax.set_title(title)
-    ax.axis('off')
-    fig.tight_layout()
+    # --- подписи ---
+    nx.draw_networkx_labels(
+        G,
+        pos,
+        nx.get_node_attributes(G, 'label'),
+        font_size=10,
+        font_weight='bold'
+    )
+
+    # --- легенда ---
+    for agent, color in agent_colors.items():
+        plt.plot([], [], color=color, label=agent, linewidth=3)
+
+    plt.legend(title="Agents", loc='upper left', bbox_to_anchor=(1, 1))
+
+    plt.title(title)
+    plt.axis('off')
+    plt.tight_layout()
+
     if save_path:
-        fig.savefig(save_path, dpi=150, bbox_inches='tight')
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+
     plt.show()

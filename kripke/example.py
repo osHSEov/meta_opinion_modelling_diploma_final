@@ -38,12 +38,12 @@ def main():
 
     builder = KripkeBuilder(agents, propositions, formulas)
     model = builder.model
-    print(f"Исходная модель: {len(model.worlds)} миров")
-    draw_kripke_model(model, title="Original Kripke Model", save_path="original_model.png")
+    print(f"KD45 модель: {len(model.worlds)} миров")
+    draw_kripke_model(model, title="Original KD45 Model", save_path="original_model.png")
 
     reduced = compute_bisimulation_quotient(model)
     print(f"После сокращения: {len(reduced.worlds)} миров")
-    draw_kripke_model(reduced, title="Reduced Kripke Model", save_path="reduced_model.png")
+    draw_kripke_model(reduced, title="Reduced KD45 Model", save_path="reduced_model.png")
 
     root = 0
     print("\nПроверка истинности формул в мире 0 сокращённой модели:")
