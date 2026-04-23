@@ -1,14 +1,13 @@
 from collections import defaultdict
-from typing import List, Set, Dict, Tuple
 from kripke.model import KripkeModel
 
 def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
     worlds = model.worlds
     agents = model.agents
 
+    # Начальное разбиение по оценке
     partition = []
     val_to_block = {}
-
     for w in worlds:
         val = frozenset(model.valuation.get(w, set()))
         if val not in val_to_block:
@@ -17,14 +16,13 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
         else:
             partition[val_to_block[val]].add(w)
 
+    # Рефайнмент
     changed = True
     while changed:
         changed = False
         new_partition = []
-
         for block in partition:
-            sig_to_worlds = {}
-
+            sig_to_worlds = defaultdict(set)
             for w in block:
                 sig = []
                 for a in agents:
@@ -36,47 +34,42 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
                                     reachable_blocks.add(idx)
                                     break
                     sig.append(frozenset(reachable_blocks))
-
                 sig = tuple(sig)
-                sig_to_worlds.setdefault(sig, set()).add(w)
+                sig_to_worlds[sig].add(w)
 
             if len(sig_to_worlds) > 1:
                 changed = True
                 new_partition.extend(sig_to_worlds.values())
             else:
                 new_partition.append(block)
-
         partition = new_partition
 
+    # Построение фактор-модели
     block_to_new = {}
     new_worlds = []
     new_valuation = {}
-
     for idx, block in enumerate(partition):
         key = frozenset(block)
         block_to_new[key] = idx
         new_worlds.append(idx)
-
         rep = next(iter(block))
         new_valuation[idx] = model.valuation.get(rep, set()).copy()
 
     new_relations = {a: set() for a in agents}
-
     for a in agents:
         for (u, v) in model.relations[a]:
-
             bu = next(frozenset(b) for b in partition if u in b)
             bv = next(frozenset(b) for b in partition if v in b)
-
             new_relations[a].add((block_to_new[bu], block_to_new[bv]))
 
+    # Создаём фактор-модель (KD45 уже не применяем)
     reduced = KripkeModel(
         worlds=new_worlds,
         agents=agents,
         propositions=model.propositions,
         relations=new_relations,
         valuation=new_valuation,
-        enforce_frame=False  
+        requirements=None,      # в фактор-модели требования не нужны для проверки формул
+        enforce_frame=False
     )
-
     return reduced
