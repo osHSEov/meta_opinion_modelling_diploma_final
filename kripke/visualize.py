@@ -1,35 +1,51 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyArrowPatch
 import numpy as np
 
 def draw_kripke_model(model, title="Kripke Model", save_path=None):
     G = nx.MultiDiGraph()
 
+    # --- Узлы ---
     for w in model.worlds:
         props = sorted([f"p{i}" for i in model.valuation.get(w, set())])
         label = f"w{w}\n{','.join(props) if props else '∅'}"
         G.add_node(w, label=label)
 
+    # --- Цвета агентов ---
     agent_colors = {agent: plt.cm.tab10(i) for i, agent in enumerate(model.agents)}
 
+    # --- Рёбра (без петель!) ---
     for agent in model.agents:
         for (u, v) in model.relations[agent]:
-            G.add_edge(u, v, agent=agent)
+            if u != v:
+                G.add_edge(u, v, agent=agent)
 
-    pos = nx.spring_layout(G, seed=42, k=2.5, iterations=50)
+    # --- Сбор петель в таблицу ---
+    loops_by_world = {
+        w: sorted([agent for agent in model.agents if (w, w) in model.relations[agent]])
+        for w in model.worlds
+    }
 
-    plt.figure(figsize=(12, 9))
-    nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=2200)
+    # --- Layout ---
+    pos = nx.spring_layout(G, seed=42, k=3, iterations=80)
 
+    plt.figure(figsize=(13, 9))
+
+    # --- Узлы ---
+    nx.draw_networkx_nodes(
+        G, pos,
+        node_color='lightblue',
+        node_size=2200
+    )
+
+    # --- Рёбра по агентам ---
     for idx, (agent, color) in enumerate(agent_colors.items()):
-        # Обычные рёбра (между разными мирами)
-        non_loop_edges = [(u, v) for (u, v, d) in G.edges(data=True) if d['agent'] == agent and u != v]
-        if non_loop_edges:
+        edges = [(u, v) for (u, v, d) in G.edges(data=True) if d['agent'] == agent]
+        if edges:
             nx.draw_networkx_edges(
                 G,
                 pos,
-                edgelist=non_loop_edges,
+                edgelist=edges,
                 edge_color=[color],
                 width=2.5,
                 alpha=0.9,
@@ -41,36 +57,7 @@ def draw_kripke_model(model, title="Kripke Model", save_path=None):
                 min_target_margin=25
             )
 
-        # Петли (self-loops)
-        loop_edges = [
-        (u, v)
-        for (u, v, d) in G.edges(data=True)
-        if d['agent'] == agent and u == v
-            ]
-
-        for loop_idx, (u, v) in enumerate(loop_edges):
-
-            x, y = pos[u]
-
-            # Смещение центра петли
-            angle = 2 * np.pi * (idx + loop_idx) / max(1, len(agent_colors))
-            dx = 0.08 * np.cos(angle)
-            dy = 0.08 * np.sin(angle)
-
-            loop = FancyArrowPatch(
-                (x + dx, y + dy),
-                (x + dx + 0.001, y + dy + 0.001),
-                connectionstyle=f"arc3,rad={0.5 + idx * 0.15}",
-                arrowstyle='-|>',
-                mutation_scale=20,
-                color=color,
-                linewidth=2.5,
-                alpha=0.9
-            )
-
-            plt.gca().add_patch(loop)
-
-    # Подписи узлов
+    # --- Подписи узлов ---
     nx.draw_networkx_labels(
         G,
         pos,
@@ -79,15 +66,38 @@ def draw_kripke_model(model, title="Kripke Model", save_path=None):
         font_weight='bold'
     )
 
-
+    # --- Легенда агентов ---
     for agent, color in agent_colors.items():
         plt.plot([], [], color=color, label=agent, linewidth=3)
 
     plt.legend(title="Agents", loc='upper left', bbox_to_anchor=(1, 1))
+
+    # --- Таблица петель ---
+    lines = ["Reflexive edges:"]
+    for w in model.worlds:
+        agents = loops_by_world[w]
+        if agents:
+            lines.append(f"w{w}: {', '.join(agents)}")
+        else:
+            lines.append(f"w{w}: ∅")
+
+    table_text = "\n".join(lines)
+
+    plt.gca().text(
+        1.02, 0.5,
+        table_text,
+        transform=plt.gca().transAxes,
+        fontsize=10,
+        verticalalignment='center',
+        bbox=dict(boxstyle="round,pad=0.4", facecolor="whitesmoke", alpha=0.8)
+    )
+
+    # --- Финал ---
     plt.title(title)
     plt.axis('off')
     plt.tight_layout()
 
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches='tight')
+
     plt.show()
