@@ -11,22 +11,17 @@ def main():
     sample_json = '''
     {
       "id": "2f72668afd61",
-      "topic": "Should voting age be lowered to 16 worldwide?",
+      "topic": "AI ethics",
       "text": "...",
-      "agents": ["Alex", "Maya", "Jordan"],
+      "agents": ["A", "B", "C", "D"],
       "propositions": [
-        "Voting age should be lowered to 16 worldwide.",
-        "Sixteen-year-olds are mature enough to vote responsibly.",
-        "Lowering the voting age will increase political engagement among youth."
+        "AI is dangerous."
       ],
       "formulas": [
-        "B_Alex(p1)",
-        "B_Maya(p1)",
-        "B_Maya(p2)",
-        "B_Jordan(¬p2)",
-        "B_Alex(B_Maya(B_Jordan(¬p2)))",
-        "B_Jordan(¬p3)",
-        "B_Maya(B_Alex(p3))"
+       "B_A(B_B(B_C(B_D(p1))))",
+       "B_B(B_C(B_D(p1)))",
+       "B_C(B_D(p1))",
+       "B_D(p1)"
       ],
       "depth": 3
     }
@@ -43,6 +38,10 @@ def main():
 
     reduced = compute_bisimulation_quotient(model)
     print(f"После сокращения: {len(reduced.worlds)} миров")
+    
+    for agent in reduced.agents:
+      print(f"{agent} edges: {reduced.relations.get(agent, set())}")
+      
     draw_kripke_model(reduced, title="Reduced KD45 Model", save_path="reduced_model.png")
 
     root = 0
@@ -51,6 +50,7 @@ def main():
         ast = parse_formula(f_str)
         result = reduced.check_formula(root, ast)
         print(f"{f_str}: {result}")
+        
 
 if __name__ == "__main__":
     main()

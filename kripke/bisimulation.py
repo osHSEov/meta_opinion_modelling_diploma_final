@@ -1,6 +1,42 @@
 from collections import defaultdict
 from kripke.model import KripkeModel
 
+
+
+def repair_kd45_frame(model: KripkeModel):
+    for agent in model.agents:
+        rel = set(model.relations[agent])
+
+        changed = True
+        while changed:
+            changed = False
+            new_rel = set(rel)
+
+            for (u, v) in rel:
+                for (x, w) in rel:
+                    if v == x and (u, w) not in new_rel:
+                        new_rel.add((u, w))
+                        changed = True
+
+            for (u, v) in rel:
+                for (x, y) in rel:
+                    if u == x and (v, y) not in new_rel:
+                        new_rel.add((v, y))
+                        changed = True
+
+            rel = new_rel
+
+        for w in model.worlds:
+            has_outgoing = any(u == w for (u, v) in rel)
+
+            if not has_outgoing:
+                rel.add((w, w))
+
+        model.relations[agent] = rel
+
+
+
+
 def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
     worlds = model.worlds
     agents = model.agents
@@ -72,4 +108,7 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
         requirements=None,      # в фактор-модели требования не нужны для проверки формул
         enforce_frame=False
     )
+    
+    repair_kd45_frame(reduced)
+    
     return reduced

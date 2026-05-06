@@ -64,7 +64,7 @@ class KripkeBuilder:
                     if isinstance(f, Belief):
                         agent = f.agent
                         sub = f.child
-                        for (u, v) in self.relations[agent]:
+                        for (u, v) in list(self.relations[agent]):
                             if u == w:
                                 if sub not in self.worlds[v]:
                                     self._add_requirement(v, sub)
