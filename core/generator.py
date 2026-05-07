@@ -9,7 +9,7 @@ from .prompts import (
     build_topic_user_prompt,
 )
 from .parser import parse_response
-
+from .styles import STYLE_DESCRIPTIONS
 
 class MetaOpinionDatasetGenerator:
     def __init__(self, ollama_client, config: dict):
@@ -60,7 +60,14 @@ class MetaOpinionDatasetGenerator:
         print("Topic generation failed — using fallback pool")
         return self._get_fallback_topics(num_topics)
 
-    def _validate_sample(self, parsed: dict) -> bool:
+    def _validate_sample(
+        self, 
+        parsed: dict,
+        expected_num_agents: int,
+        min_props: int,
+        max_props: int,
+        max_depth: int,
+        ) -> bool:
         required = {"text", "agents", "propositions", "formulas", "depth"}
         if not required.issubset(parsed.keys()):
             return False
@@ -70,30 +77,55 @@ class MetaOpinionDatasetGenerator:
             or not isinstance(parsed["propositions"], list)
             or not isinstance(parsed["formulas"], list)
             or not isinstance(parsed["depth"], int)
-            or parsed["depth"] > self.config["max_depth"]
         ):
+            return False
+
+        if len(parsed["agents"]) != expected_num_agents:
             return False
 
         if not (
-            len(parsed["agents"]) == self.config["num_agents"]
-            and self.config["min_props"] <= len(parsed["propositions"]) <= self.config["max_props"]
-            and len(parsed["formulas"]) > 0
+            min_props <= len(parsed["propositions"]) <= max_props
         ):
             return False
 
-        # Additional validation: formulas must match text agents
-        if not validate_formulas_match_text(parsed["formulas"], parsed["text"]):
+        if len(parsed["formulas"]) == 0:
+            return False
+        
+        if parsed["depth"] > max_depth:
+            return False
+
+        if not validate_formulas_match_text(
+            parsed["formulas"],
+            parsed["text"]
+        ):
             return False
 
         return True
 
-    def generate_sample(self, topic: str) -> Optional[SyntheticSample]:
+        
+
+    def generate_sample(
+        self, 
+        topic: str,
+        num_agents: int,
+        max_depth: int,
+        min_props: int,
+        max_props: int,
+        style: str,
+        ) -> Optional[SyntheticSample]:
+        
+        style_info = STYLE_DESCRIPTIONS[style]
+
         prompt = build_user_prompt(
             topic,
-            self.config["max_depth"],
-            self.config["num_agents"],
-            self.config["min_props"],
-            self.config["max_props"],
+            num_agents=num_agents,
+            max_depth=max_depth,
+            min_props=min_props,
+            max_props=max_props,
+            style=style,
+            style_description=style_info["description"],
+            name_pool=style_info["name_pool"],
+            speech_markers=style_info["speech_markers"],
         )
 
         for attempt in range(self.config["max_retries"]):
@@ -106,7 +138,7 @@ class MetaOpinionDatasetGenerator:
             )
 
             parsed = parse_response(response["message"]["content"])
-            if parsed and self._validate_sample(parsed):
+            if parsed and self._validate_sample(parsed, num_agents, min_props, max_props, max_depth):
                 sample_id = hashlib.md5(
                     (parsed["text"] + topic).encode()
                 ).hexdigest()[:12]

@@ -10,15 +10,26 @@ def build_system_prompt() -> str:
 
 def build_user_prompt(
     topic: str,
-    max_depth: int,
     num_agents: int,
+    max_depth: int,
     min_props: int,
     max_props: int,
+    style: str,
+    style_description: str,
+    name_pool: list,
+    speech_markers: list
 ) -> str:
+    
+    markers = ", ".join(speech_markers)
+    names = ", ".join(name_pool)
+    
     return f"""Topic: {topic}
+
 Exactly {num_agents} agents participate.
 Maximum nesting depth of B-operators: {max_depth}.
 Number of atomic propositions: from {min_props} to {max_props}.
+Style: {style_description}
+Speech markers typical for this style: {markers}
 
 Generate a realistic, everyday dialogue that sounds like a natural conversation from social media,
 a forum, or a group chat. Avoid academic or overly formal language. Vary the agents' perspectives,

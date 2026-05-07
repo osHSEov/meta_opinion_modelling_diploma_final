@@ -4,7 +4,7 @@ from .base_llm_client import BaseLLMClient
 
 class OllamaClient(BaseLLMClient):
     def __init__(self, config: dict):
-        self.model = config["model"]
+        self.model = config["name"]
         self.temperature = config["temperature"]
         self.seed = config["seed"]
         #self.num_ctx = config["num_ctx"]

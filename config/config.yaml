@@ -1,21 +1,40 @@
-llm:
-  default_backend: vllm
+model:
+  name: "llama3.1:latest"
+  backend: "ollama"
+  temperature: 0.8
+  seed: 42
+  #num_ctx: 131072
 
-  qwen3-8b:
-      backend: vllm
-      base_url: "http://localhost:8000/qwen2.5-7b"
-      model: "/models/qwen2.5-7b"
-      temperature: 0.7
+diversity_profiles:
+  casual_chat:
+    num_agents: [2, 4]         
+    max_depth: [1, 2]
+    min_props: 2
+    max_props: 4
+    style: "casual_chat"
+  forum_debate:
+    num_agents: [3, 5]
+    max_depth: [2, 3]
+    min_props: 3
+    max_props: 6
+    style: "forum_debate"
+  twitter_thread:
+    num_agents: [2, 3]
+    max_depth: [1, 2]
+    min_props: 2
+    max_props: 4
+    style: "twitter_thread"
 
-  generation:
-  max_depth: 3
-  num_agents: 3
-  min_props: 2
-  max_props: 5
-  samples_per_topic: 10
-  num_topics: 20
-  max_retries: 3
+profile_weights:
+  casual_chat: 0.35
+  forum_debate: 0.30
+  twitter_thread: 0.35
 
-  output:
-  file: "meta_opinions2_dataset.jsonl"
+output:
+  file: "meta_opinions_dataset2.jsonl"
   append: true
+
+samples_total: 100            
+topics_pool_size: 40        
+max_retries: 3                
+similarity_threshold: 0.7
