@@ -1,5 +1,5 @@
 model:
-  name: "llama3.1:latest"
+  name: "llama3.1:70b-instruct-q4_0"
   backend: "ollama"
   temperature: 0.8
   seed: 42
@@ -13,7 +13,7 @@ diversity_profiles:
     max_props: 4
     style: "casual_chat"
   forum_debate:
-    num_agents: [3, 5]
+    num_agents: [3, 7]
     max_depth: [2, 3]
     min_props: 3
     max_props: 6
