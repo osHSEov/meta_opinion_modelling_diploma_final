@@ -54,7 +54,7 @@ def main():
     with open("config/config.yaml", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
-    client = OllamaClient(config["model"])
+    client = build_llm_client(config["model"])
     generator = MetaOpinionDatasetGenerator(client, config["generation"])
 
     output_path = config["output"]["file"]
@@ -94,7 +94,6 @@ def main():
                 existing_ids.add(sample.id)
                 count += 1
 
-                # Save checkpoint every 5 samples
                 if count % 5 == 0:
                     save_checkpoint(output_path, existing_ids, count, i)
 

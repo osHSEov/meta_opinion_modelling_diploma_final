@@ -1,10 +1,10 @@
 import ollama
 from typing import List, Dict, Any
+from .base_llm_client import BaseLLMClient
 
-
-class OllamaClient:
+class OllamaClient(BaseLLMClient):
     def __init__(self, config: dict):
-        self.model = config["name"]
+        self.model = config["model"]
         self.temperature = config["temperature"]
         self.seed = config["seed"]
         #self.num_ctx = config["num_ctx"]

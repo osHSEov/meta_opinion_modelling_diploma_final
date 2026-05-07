@@ -1,10 +1,13 @@
-model:
-  name: "gpt-oss:120b"
-  temperature: 0.8
-  seed: 42
-  #num_ctx: 131072
+llm:
+  default_backend: vllm
 
-generation:
+  qwen3-8b:
+      backend: vllm
+      base_url: "http://localhost:8000/qwen2.5-7b"
+      model: "/models/qwen2.5-7b"
+      temperature: 0.7
+
+  generation:
   max_depth: 3
   num_agents: 3
   min_props: 2
@@ -13,29 +16,6 @@ generation:
   num_topics: 20
   max_retries: 3
 
-# Real-style generation settings (2nd depth max, more natural dialogue)
-real_generation:
-  max_depth: 2
-  num_agents: 3
-  min_props: 2
-  max_props: 4
-  samples_per_topic: 5
-  num_topics: 10
-  max_retries: 5
-
-# Mafia game data settings
-mafia_generation:
-  max_depth: 1
-  num_agents: 7  # Full 7-player mafia games
-  min_props: 2
-  max_props: 5
-  samples_per_topic: 1
-  num_topics: 100
-  max_retries: 3
-
-# Output configuration
-# Set append: true to add new samples to existing dataset
-# Set append: false to overwrite the dataset
-output:
-  file: "meta_opinions_dataset.jsonl"
+  output:
+  file: "meta_opinions2_dataset.jsonl"
   append: true

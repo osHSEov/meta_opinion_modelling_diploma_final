@@ -1,0 +1,95 @@
+llm:
+  default_backend: vllm
+
+  models:
+
+    llama3.1_8b:
+      backend: ollama
+      model: "llama3.1:8b"
+      temperature: 0.8
+      seed: 42
+
+    granite_3_3_8b:
+      backend: ollama
+      model: "granite3.3:8b"
+      temperature: 0.8
+      seed: 42
+
+    gemma3_27b:
+      backend: ollama
+      model: "gemma3:27b"
+      temperature: 0.7
+      seed: 42
+
+    qwen3_30b:
+      backend: vllm
+      base_url: "http://localhost:8000/qwen3"
+      model: "/models/qwen3-30b"
+      temperature: 0.7
+
+    mixtral_8x22b:
+      backend: vllm
+      base_url: "http://localhost:8001/mixtral"
+      model: "/models/mixtral-8x22b"
+      temperature: 0.7
+
+    llama3_3_70b:
+      backend: vllm
+      base_url: "http://localhost:8002/llama70"
+      model: "/models/llama3.3-70b"
+      temperature: 0.7
+
+    gpt_oss_120b:
+      backend: vllm
+      base_url: "http://localhost:8003/gptoss"
+      model: "/models/gpt-oss-120b"
+      temperature: 0.6
+
+    mistral_120b:
+      backend: vllm
+      base_url: "http://localhost:8004/mistral120"
+      model: "/models/mistral-120b"
+      temperature: 0.6
+
+
+generation:
+  max_depth: 3
+  num_agents: 3
+  min_props: 2
+  max_props: 5
+  samples_per_topic: 10
+  num_topics: 20
+  max_retries: 3
+
+
+real_generation:
+  max_depth: 2
+  num_agents: 3
+  min_props: 2
+  max_props: 4
+  samples_per_topic: 5
+  num_topics: 10
+  max_retries: 5
+
+
+mafia_generation:
+  max_depth: 1
+  num_agents: 7
+  min_props: 2
+  max_props: 5
+  samples_per_topic: 1
+  num_topics: 100
+  max_retries: 3
+
+
+output:
+  file: "meta_opinions_dataset.jsonl"
+  append: true
+
+
+experiment:
+  mode: single
+  active_models:
+    - llama3.1_8b
+    - gemma3_27b
+    - qwen3_30b

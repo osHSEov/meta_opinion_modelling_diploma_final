@@ -16,6 +16,7 @@ from core.ast_parser import match_formulas, max_depth
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
+from services.llm_factory import build_llm_client
 
 
 def normalize_formula(f: str) -> str:
@@ -129,17 +130,25 @@ def fuzzy_score_propositions(
 def evaluate_dataset(
     dataset_path: str,
     model_name: str,
+    backend: str = "ollama",
+    base_url: str = None, 
     temperature: float = 0.0,
     max_retries: int = 2,
     sample_random: int = None,
     fuzzy_threshold: float = 0.7
 ) -> Dict[str, float]:
 
-    client = OllamaClient({
-        "name": model_name,
+    model_config = ({
+        "model": model_name,
+        "backend": backend,
         "temperature": temperature,
         "seed": 42
     })
+    
+    if backend == "vllm":
+        model_config["base_url"] = base_url or "http://localhost:8000"
+        
+    client = build_llm_client(model_config)
 
     samples = load_dataset(dataset_path)
     if sample_random is not None:
