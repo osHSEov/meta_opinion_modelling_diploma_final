@@ -11,17 +11,22 @@ def main():
     sample_json = '''
     {
       "id": "2f72668afd61",
-      "topic": "AI ethics",
+      "topic": "Public opinion pressure",
       "text": "...",
-      "agents": ["A", "B", "C", "D"],
+      "agents": ["Leader", "A", "B", "C", "D"],
       "propositions": [
-        "AI is dangerous."
+        "risky_decision"
       ],
       "formulas": [
-       "B_A(B_B(B_C(B_D(p1))))",
-       "B_B(B_C(B_D(p1)))",
-       "B_C(B_D(p1))",
-       "B_D(p1)"
+        
+      "B_Leader(p1)",
+      "B_A(B_Leader(p1))",
+      "B_B(B_A(p1))",
+      "B_C(B_B(p1))",
+      "B_D(B_C(p1))",
+      "~p1",
+      "B_A(B_B(B_C(p1)))"
+      
       ],
       "depth": 3
     }

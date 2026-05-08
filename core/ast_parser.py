@@ -27,7 +27,7 @@ def parse_formula(s: str) -> Node:
     if re.fullmatch(r"p\d+", s):
         return Proposition(s)
 
-    if s.startswith("¬"):
+    if s.startswith("¬") or s.startswith("~") or s.startswith("!") or s.startswith("not"):
         return Not(parse_formula(s[1:]))
 
     match = re.match(r"B_([A-Za-z]+)\((.*)\)", s)
