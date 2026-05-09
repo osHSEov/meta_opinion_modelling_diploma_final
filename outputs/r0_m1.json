@@ -1,0 +1,25 @@
+{
+  "formulas": [
+    "B_Bailey(p6)",
+    "B_Casey(p4)",
+    "B_Logan(p4)",
+    "B_Dana(p7)",
+    "B_Logan(p1)",
+    "B_Logan(p3)",
+    "B_Dana(p11)",
+    "B_Dana(p12)",
+    "B_Finley(p1)",
+    "B_Dana(p10)",
+    "B_Harper(p14)",
+    "B_Dana(p13)",
+    "B_Logan(p2)",
+    "B_Dana(p9)",
+    "B_Logan(p5)",
+    "B_Dana(p8)"
+  ],
+  "metrics": {
+    "worlds": 17,
+    "reduced_worlds": 7,
+    "edges": 289
+  }
+}

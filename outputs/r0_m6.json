@@ -1,0 +1,10 @@
+{
+  "formulas": [
+    "B_Finley(p1)"
+  ],
+  "metrics": {
+    "worlds": 2,
+    "reduced_worlds": 2,
+    "edges": 14
+  }
+}

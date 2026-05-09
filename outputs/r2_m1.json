@@ -1,0 +1,14 @@
+{
+  "formulas": [
+    "B_Logan(p4)",
+    "B_Logan(p3)",
+    "B_Logan(p16)",
+    "B_Logan(p2)",
+    "B_Logan(p5)"
+  ],
+  "metrics": {
+    "worlds": 6,
+    "reduced_worlds": 2,
+    "edges": 60
+  }
+}

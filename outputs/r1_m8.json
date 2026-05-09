@@ -1,0 +1,15 @@
+{
+  "formulas": [
+    "B_Dana(p11)",
+    "B_Dana(p10)",
+    "B_Dana(p9)",
+    "B_Dana(p13)",
+    "B_Dana(p12)",
+    "B_Dana(p8)"
+  ],
+  "metrics": {
+    "worlds": 7,
+    "reduced_worlds": 2,
+    "edges": 84
+  }
+}

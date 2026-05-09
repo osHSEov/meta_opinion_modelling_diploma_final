@@ -1,0 +1,20 @@
+{
+  "formulas": [
+    "B_Casey(p5)",
+    "B_Indigo(p15)",
+    "B_Indigo(p12)",
+    "B_Casey(p4)",
+    "B_Casey(p2)",
+    "B_Indigo(p5)",
+    "B_Casey(p3)",
+    "B_Indigo(p2)",
+    "B_Indigo(p6)",
+    "B_Casey(p6)",
+    "B_Indigo(p3)"
+  ],
+  "metrics": {
+    "worlds": 12,
+    "reduced_worlds": 3,
+    "edges": 192
+  }
+}

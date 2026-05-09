@@ -1,0 +1,14 @@
+{
+  "formulas": [
+    "B_Indigo(p15)",
+    "B_Indigo(p12)",
+    "B_Indigo(p3)",
+    "B_Indigo(p2)",
+    "B_Indigo(p5)"
+  ],
+  "metrics": {
+    "worlds": 6,
+    "reduced_worlds": 2,
+    "edges": 60
+  }
+}

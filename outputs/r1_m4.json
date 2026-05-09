@@ -1,0 +1,31 @@
+{
+  "formulas": [
+    "B_Logan(p4)",
+    "B_Indigo(p12)",
+    "B_Dana(p11)",
+    "B_Dana(p13)",
+    "B_Logan(p2)",
+    "B_Bailey(p6)",
+    "B_Dana(p12)",
+    "B_Indigo(p3)",
+    "B_Bailey(p3)",
+    "B_Logan(p14)",
+    "B_Indigo(p15)",
+    "B_Casey(p4)",
+    "B_Dana(p10)",
+    "B_Indigo(p6)",
+    "B_Logan(p12)",
+    "B_Bailey(p12)",
+    "B_Logan(p3)",
+    "B_Indigo(p2)",
+    "B_Dana(p9)",
+    "B_Logan(p6)",
+    "B_Indigo(p5)",
+    "B_Dana(p8)"
+  ],
+  "metrics": {
+    "worlds": 23,
+    "reduced_worlds": 6,
+    "edges": 552
+  }
+}

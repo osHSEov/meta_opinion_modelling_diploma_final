@@ -1,0 +1,17 @@
+{
+  "formulas": [
+    "B_Dana(p7)",
+    "B_Dana(p11)",
+    "B_Dana(p12)",
+    "B_Finley(p1)",
+    "B_Dana(p10)",
+    "B_Dana(p13)",
+    "B_Dana(p9)",
+    "B_Dana(p8)"
+  ],
+  "metrics": {
+    "worlds": 9,
+    "reduced_worlds": 3,
+    "edges": 117
+  }
+}
