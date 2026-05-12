@@ -27,10 +27,6 @@ def draw_mafia_kripke_model(
 
     G = nx.MultiDiGraph()
 
-    # ─────────────────────────────────────────────
-    # Nodes
-    # ─────────────────────────────────────────────
-
     for w in model.worlds:
 
         props = sorted([
@@ -48,18 +44,11 @@ def draw_mafia_kripke_model(
 
         G.add_node(w, label=label)
 
-    # ─────────────────────────────────────────────
-    # Agent colors
-    # ─────────────────────────────────────────────
 
     agent_colors = {
         agent: plt.cm.tab10(i)
         for i, agent in enumerate(model.agents)
     }
-
-    # ─────────────────────────────────────────────
-    # Edges
-    # ─────────────────────────────────────────────
 
     for agent in model.agents:
 
@@ -73,10 +62,6 @@ def draw_mafia_kripke_model(
                     agent=agent
                 )
 
-    # ─────────────────────────────────────────────
-    # Reflexive edges
-    # ─────────────────────────────────────────────
-
     loops_by_world = {
         w: sorted([
             agent
@@ -85,10 +70,6 @@ def draw_mafia_kripke_model(
         ])
         for w in model.worlds
     }
-
-    # ─────────────────────────────────────────────
-    # Layout
-    # ─────────────────────────────────────────────
 
     pos = nx.spring_layout(
         G,
@@ -99,12 +80,7 @@ def draw_mafia_kripke_model(
 
     fig = plt.figure(figsize=(18, 11))
 
-    # main graph axis
     ax = fig.add_axes([0.05, 0.08, 0.62, 0.84])
-
-    # ─────────────────────────────────────────────
-    # Nodes
-    # ─────────────────────────────────────────────
 
     nx.draw_networkx_nodes(
         G,
@@ -113,10 +89,6 @@ def draw_mafia_kripke_model(
         node_size=2600,
         ax=ax
     )
-
-    # ─────────────────────────────────────────────
-    # Edges by agent
-    # ─────────────────────────────────────────────
 
     for idx, (agent, color) in enumerate(agent_colors.items()):
 
@@ -144,10 +116,6 @@ def draw_mafia_kripke_model(
                 ax=ax
             )
 
-    # ─────────────────────────────────────────────
-    # Labels
-    # ─────────────────────────────────────────────
-
     nx.draw_networkx_labels(
         G,
         pos,
@@ -156,10 +124,6 @@ def draw_mafia_kripke_model(
         font_weight='bold',
         ax=ax
     )
-
-    # ─────────────────────────────────────────────
-    # Agent legend
-    # ─────────────────────────────────────────────
 
     for agent, color in agent_colors.items():
 
@@ -176,10 +140,6 @@ def draw_mafia_kripke_model(
         loc='upper left',
         bbox_to_anchor=(1.02, 1)
     )
-
-    # ─────────────────────────────────────────────
-    # Reflexive edge table
-    # ─────────────────────────────────────────────
 
     loop_lines = ["Reflexive edges:\n"]
 
@@ -209,10 +169,6 @@ def draw_mafia_kripke_model(
             alpha=0.9
         )
     )
-
-    # ─────────────────────────────────────────────
-    # Proposition legend
-    # ─────────────────────────────────────────────
 
     prop_lines = ["Propositions:\n"]
 
@@ -246,10 +202,6 @@ def draw_mafia_kripke_model(
             alpha=0.95
         )
     )
-
-    # ─────────────────────────────────────────────
-    # Final
-    # ─────────────────────────────────────────────
 
     ax.set_title(title, fontsize=15)
 

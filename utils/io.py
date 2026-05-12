@@ -3,7 +3,6 @@ import os
 from dataclasses import asdict
 
 def save_jsonl(path, samples, append=False):
-    # Ensure directory exists
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     mode = "a" if append else "w"
     with open(path, mode, encoding="utf-8") as f:

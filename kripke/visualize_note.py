@@ -5,7 +5,6 @@ import networkx as nx
 def draw_kripke_model_interactive(model, output_file="kripke.html"):
     G = nx.MultiDiGraph()
 
-    # --- Узлы ---
     for w in model.worlds:
 
         props = sorted([
@@ -22,7 +21,6 @@ def draw_kripke_model_interactive(model, output_file="kripke.html"):
             color="lightblue"
         )
 
-    # --- Цвета агентов ---
     colors = [
         "red",
         "blue",
@@ -38,7 +36,6 @@ def draw_kripke_model_interactive(model, output_file="kripke.html"):
         for i, agent in enumerate(model.agents)
     }
 
-    # --- Рёбра ---
     for agent in model.agents:
         for (u, v) in model.relations[agent]:
 
@@ -49,8 +46,6 @@ def draw_kripke_model_interactive(model, output_file="kripke.html"):
                 color=agent_colors[agent],
                 arrows="to"
             )
-
-    # --- Pyvis ---
     net = Network(
         height="850px",
         width="100%",
@@ -60,7 +55,6 @@ def draw_kripke_model_interactive(model, output_file="kripke.html"):
 
     net.from_nx(G)
 
-    # Physics engine
     net.force_atlas_2based()
 
     net.show(output_file)

@@ -5,40 +5,33 @@ import numpy as np
 def draw_kripke_model(model, title="Kripke Model", save_path=None):
     G = nx.MultiDiGraph()
 
-    # --- Узлы ---
     for w in model.worlds:
         props = sorted([f"p{i}" for i in model.valuation.get(w, set())])
         label = f"w{w}\n{','.join(props) if props else '∅'}"
         G.add_node(w, label=label)
 
-    # --- Цвета агентов ---
     agent_colors = {agent: plt.cm.tab10(i) for i, agent in enumerate(model.agents)}
 
-    # --- Рёбра (без петель!) ---
     for agent in model.agents:
         for (u, v) in model.relations[agent]:
             if u != v:
                 G.add_edge(u, v, agent=agent)
 
-    # --- Сбор петель в таблицу ---
     loops_by_world = {
         w: sorted([agent for agent in model.agents if (w, w) in model.relations[agent]])
         for w in model.worlds
     }
 
-    # --- Layout ---
     pos = nx.spring_layout(G, seed=42, k=3, iterations=80)
 
     plt.figure(figsize=(13, 9))
 
-    # --- Узлы ---
     nx.draw_networkx_nodes(
         G, pos,
         node_color='lightblue',
         node_size=2200
     )
 
-    # --- Рёбра по агентам ---
     for idx, (agent, color) in enumerate(agent_colors.items()):
         edges = [(u, v) for (u, v, d) in G.edges(data=True) if d['agent'] == agent]
         if edges:
@@ -57,7 +50,6 @@ def draw_kripke_model(model, title="Kripke Model", save_path=None):
                 min_target_margin=25
             )
 
-    # --- Подписи узлов ---
     nx.draw_networkx_labels(
         G,
         pos,
@@ -66,13 +58,11 @@ def draw_kripke_model(model, title="Kripke Model", save_path=None):
         font_weight='bold'
     )
 
-    # --- Легенда агентов ---
     for agent, color in agent_colors.items():
         plt.plot([], [], color=color, label=agent, linewidth=3)
 
     plt.legend(title="Agents", loc='upper left', bbox_to_anchor=(1, 1))
 
-    # --- Таблица петель ---
     lines = ["Reflexive edges:"]
     for w in model.worlds:
         agents = loops_by_world[w]
@@ -92,7 +82,6 @@ def draw_kripke_model(model, title="Kripke Model", save_path=None):
         bbox=dict(boxstyle="round,pad=0.4", facecolor="whitesmoke", alpha=0.8)
     )
 
-    # --- Финал ---
     plt.title(title)
     plt.axis('off')
     plt.tight_layout()

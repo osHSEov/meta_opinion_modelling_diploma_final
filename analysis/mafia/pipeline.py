@@ -67,7 +67,6 @@ def main():
 
         formulas = []
 
-        # introspection beliefs
         for belief in beliefs:
 
             prop = registry.get_or_create(
@@ -80,7 +79,6 @@ def main():
                 f"B_{agent}({prop})"
             )
 
-        # llm meta beliefs
         if llm_extractor:
 
             dialogue = dialogue_builder.build_until(

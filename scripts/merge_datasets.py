@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
-"""Merge multiple JSONL datasets, removing duplicates."""
-
 import json
 import sys
 from pathlib import Path
 
 
 def load_jsonl(path: str) -> list:
-    """Load JSONL file and return list of samples."""
     samples = []
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
@@ -17,7 +13,6 @@ def load_jsonl(path: str) -> list:
 
 
 def merge_datasets(input_paths: list, output_path: str):
-    """Merge multiple datasets, deduplicating by ID."""
     all_samples = []
     seen_ids = set()
 
@@ -32,10 +27,8 @@ def merge_datasets(input_paths: list, output_path: str):
                 all_samples.append(sample)
                 seen_ids.add(sample_id)
 
-    # Sort by ID for consistent output
     all_samples.sort(key=lambda x: x.get("id", ""))
 
-    # Write output
     with open(output_path, "w", encoding="utf-8") as f:
         for sample in all_samples:
             f.write(json.dumps(sample, ensure_ascii=False) + "\n")

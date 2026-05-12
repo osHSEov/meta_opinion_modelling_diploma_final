@@ -41,7 +41,6 @@ class KripkeBuilder:
                 self.relations[agent].add((world, v))
                 self._add_requirement(v, Not(sub))
             else:
-                # Not(Not(φ)) -> добавляем φ
                 self._add_requirement(world, child.child)
 
         elif isinstance(formula, Belief):
@@ -55,7 +54,6 @@ class KripkeBuilder:
             raise ValueError(f"Unsupported formula type: {type(formula)}")
 
     def _propagate_beliefs(self):
-        """Распространяет подформулы убеждений по существующим рёбрам."""
         changed = True
         while changed:
             changed = False
@@ -83,6 +81,6 @@ class KripkeBuilder:
             propositions=self.propositions,
             relations=self.relations,
             valuation=self.valuation,
-            requirements=self.worlds,      # передаём требования для последующего насыщения
+            requirements=self.worlds,      
             enforce_frame=True
         )

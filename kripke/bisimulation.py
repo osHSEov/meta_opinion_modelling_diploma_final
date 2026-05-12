@@ -41,7 +41,6 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
     worlds = model.worlds
     agents = model.agents
 
-    # Начальное разбиение по оценке
     partition = []
     val_to_block = {}
     for w in worlds:
@@ -52,7 +51,6 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
         else:
             partition[val_to_block[val]].add(w)
 
-    # Рефайнмент
     changed = True
     while changed:
         changed = False
@@ -80,7 +78,6 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
                 new_partition.append(block)
         partition = new_partition
 
-    # Построение фактор-модели
     block_to_new = {}
     new_worlds = []
     new_valuation = {}
@@ -98,14 +95,13 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
             bv = next(frozenset(b) for b in partition if v in b)
             new_relations[a].add((block_to_new[bu], block_to_new[bv]))
 
-    # Создаём фактор-модель (KD45 уже не применяем)
     reduced = KripkeModel(
         worlds=new_worlds,
         agents=agents,
         propositions=model.propositions,
         relations=new_relations,
         valuation=new_valuation,
-        requirements=None,      # в фактор-модели требования не нужны для проверки формул
+        requirements=None,
         enforce_frame=False
     )
     
