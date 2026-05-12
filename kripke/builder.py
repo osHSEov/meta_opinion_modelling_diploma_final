@@ -4,6 +4,7 @@ from kripke.model import KripkeModel
 
 class KripkeBuilder:
     def __init__(self, agents: List[str], propositions: List[str], formulas: List[str]):
+        
         self.agents = agents
         self.propositions = propositions
         self.asts = [parse_formula(f) for f in formulas]
@@ -31,15 +32,18 @@ class KripkeBuilder:
 
         elif isinstance(formula, Not):
             child = formula.child
+            
             if isinstance(child, Proposition):
                 idx = int(child.name[1:])
                 self.valuation[world].discard(idx)
+                
             elif isinstance(child, Belief):
                 agent = child.agent
                 sub = child.child
                 v = self._new_world()
                 self.relations[agent].add((world, v))
                 self._add_requirement(v, Not(sub))
+                
             else:
                 self._add_requirement(world, child.child)
 
@@ -50,7 +54,7 @@ class KripkeBuilder:
             self.relations[agent].add((world, v))
             self._add_requirement(v, sub)
 
-        else:
+        else: # На всякий
             raise ValueError(f"Unsupported formula type: {type(formula)}")
 
     def _propagate_beliefs(self):

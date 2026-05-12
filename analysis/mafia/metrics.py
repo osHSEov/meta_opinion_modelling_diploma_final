@@ -1,3 +1,5 @@
+
+# В дальнейшем исследовании планируется доработать
 def compute_model_metrics(model, reduced):
 
     total_edges = sum(

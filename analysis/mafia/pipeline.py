@@ -4,11 +4,9 @@ from pathlib import Path
 from analysis.mafia.parser import MafiaGameParser
 from analysis.mafia.extractor import MafiaBeliefExtractor
 from analysis.mafia.propositions import PropositionRegistry
-
 from analysis.mafia.dialogue import DialogueBuilder
 from analysis.mafia.prompts import build_meta_belief_prompt
 from analysis.mafia.llm_extractor import LLMMetaBeliefExtractor
-
 from analysis.mafia.metrics import compute_model_metrics
 from analysis.mafia.serializer import save_slice_result
 
@@ -34,11 +32,8 @@ def main():
     )
 
     game_parser.load()
-
     grouped = game_parser.grouped_introspection()
-
     extractor = MafiaBeliefExtractor()
-
     registry = PropositionRegistry()
 
     dialogue_builder = DialogueBuilder(
@@ -62,9 +57,7 @@ def main():
     for (round_num, msg_seq), records in grouped.items():
         
         alive_agents = game_parser.alive_players(round_num)
-
         beliefs = extractor.extract_from_introspection(records, alive_players=alive_agents)
-
         formulas = []
 
         for belief in beliefs:
@@ -131,7 +124,6 @@ def main():
         print(metrics)
 
         original_path = output_dir / f"r{round_num}_m{msg_seq}.png"
-
         reduced_path = output_dir / f"r{round_num}_m{msg_seq}_reduced.png"
 
         draw_mafia_kripke_model(

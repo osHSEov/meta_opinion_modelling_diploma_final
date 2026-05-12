@@ -1,9 +1,7 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
 venv/
 env/
 .venv/
@@ -14,7 +12,6 @@ venv.bak/
 fresh_env/
 
 
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -34,15 +31,12 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
 *.manifest
 *.spec
 
-# Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -57,15 +51,12 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# Jupyter Notebook
 .ipynb_checkpoints/
 
-# Environments
 .env
 .venv
 env/
@@ -74,17 +65,13 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
 .spyderproject
 .spyproject
 
-# Rope project settings
 .ropeproject
 
-# mkdocs documentation
 /site
 
-# IDEs
 .vscode/
 .idea/
 *.swp
@@ -92,18 +79,12 @@ venv.bak/
 *~
 .DS_Store
 
-# Logs and databases
-*.log
 *.sql
 *.sqlite
 *.db
 
-# Project-specific generated data
-# Игнорируем сгенерированные датасеты (если не хотите хранить их в репозитории)
 *.jsonl
 output/
 data/
 results/
 
-# Сохраняем только шаблон конфига, локальные изменения конфига игнорируем (опционально)
-# config/config.local.yaml

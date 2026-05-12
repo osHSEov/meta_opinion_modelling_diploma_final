@@ -4,12 +4,13 @@ from core.ast_parser import Proposition, Not, Belief, Node
 
 @dataclass
 class KripkeModel:
-    
     worlds: List[int]
     agents: List[str]
+    
     propositions: List[str]
     relations: Dict[str, Set[tuple]]
     valuation: Dict[int, Set[int]]
+    
     requirements: Optional[Dict[int, Set[Node]]] = None
     enforce_frame: bool = True
 
@@ -18,6 +19,7 @@ class KripkeModel:
             return
 
         changed = True
+        
         while changed:
             before_rel = {a: set(r) for a, r in self.relations.items()}
             before_req = {w: set(f) for w, f in self.requirements.items()}
@@ -31,18 +33,18 @@ class KripkeModel:
         self.worlds = list(self.requirements.keys())
 
     def _enforce_kd45(self):
+        
         for agent in self.agents:
+            
             rel = set(self.relations.get(agent, set()))
             all_worlds = set(self.worlds)
 
-            # Транзитивность и евклидовость до фиксированной точки
             while True:
                 changed = False
                 
                 while True:
                     new_rel = set(rel)
-
-                    # Транзитивность: (u,v) и (v,w) -> (u,w)
+                    # Гарантируем транзитивность: если (u,v) и (v,w) -> (u,w)
                     for (u, v) in rel:
                         for (x, w) in rel:
                             if v == x:
@@ -58,13 +60,11 @@ class KripkeModel:
                         break
                     rel = new_rel
 
-                # Серийность: у каждого мира должна быть хотя бы одна исходящая дуга
+                # Серийность: из каждого мира должно идти хоть что-то
                 worlds_with_outgoing = {u for (u, v) in rel}
                 worlds_needing_edges = all_worlds - worlds_with_outgoing
 
                 if worlds_needing_edges:
-                    # Если есть хоть один мир с исходящей дугой, цепляемся к нему,
-                    # иначе создаём петлю на первом попавшемся мире.
                     reachable_worlds = {v for (u,v) in rel}
                     if reachable_worlds:
                         target = next(iter(reachable_worlds))
@@ -88,10 +88,12 @@ class KripkeModel:
             for w, formulas in list(self.requirements.items()):
                 for f in formulas:
                     if isinstance(f, Belief):
+                        
                         agent = f.agent
                         sub = f.child
                         
                         targets = {v for (u, v) in self.relations[agent] if u == w}
+                        
                         for v in targets:
                             if self._add_requirement_fixed(v, sub):
                                 changed = True
@@ -120,8 +122,8 @@ class KripkeModel:
 
                 targets = {v for (u, v) in self.relations[agent] if u == world}
 
-                if not targets:
-                    # создаём witness
+                if not targets: # При необходимоти создаем заглушку своего рода (новый мир как свидетель)
+                    
                     v = max(self.worlds) + 1
                     self.worlds.append(v)
                     self.relations[agent].add((world, v))
@@ -133,10 +135,10 @@ class KripkeModel:
                     self._add_requirement_fixed(v, Not(sub))
 
             else:
-                # двойное отрицание
                 return self._add_requirement_fixed(world, child.child)
 
         elif isinstance(formula, Belief):
+            
             agent = formula.agent
             sub = formula.child
 
@@ -149,7 +151,7 @@ class KripkeModel:
 
             for v in targets:
                 self._add_requirement_fixed(v, sub)
-
+        
         return True
 
     def world_entails(self, world: int, prop_index: int) -> bool:
@@ -168,7 +170,7 @@ class KripkeModel:
             child = ast_node.child
             accessible = {v for (u, v) in self.relations[agent] if u == world}
             if not accessible:
-                return True   # vacuous truth
+                return True # По дефолту если некуда идти, то утверждение верно
             return all(self.check_formula(v, child) for v in accessible)
 
         else:

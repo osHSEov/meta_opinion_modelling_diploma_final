@@ -27,16 +27,18 @@ def parse_formula(s: str) -> Node:
     if re.fullmatch(r"p\d+", s):
         return Proposition(s)
 
-    if s.startswith("¬") or s.startswith("~") or s.startswith("!") or s.startswith("not"):
+    # Можно было сделать лучше, но и так сойдет.
+    if s.startswith("¬") or s.startswith("~") or s.startswith("!") or s.startswith("not"): 
         return Not(parse_formula(s[1:]))
 
     match = re.match(r"B_([A-Za-z]+)\((.*)\)", s)
+    
     if match:
         agent = match.group(1)
         inner = match.group(2)
         return Belief(agent, parse_formula(inner))
 
-    raise ValueError(f"Invalid formula: {s}")
+    raise ValueError(f"Invalid formula: {s}") # На всякий
 
 def compute_depth(node: Node) -> int:
     if isinstance(node, Proposition):
@@ -85,19 +87,19 @@ def extract_components(node: Node):
     }
 
 def formula_similarity_heuristic(a: Node, b: Node) -> float:
-    ca = extract_components(a)
-    cb = extract_components(b)
+    a_comp = extract_components(a)
+    b_comp = extract_components(b)
 
     score = 0
     total = 3
 
-    if ca["agents"] == cb["agents"]:
+    if a_comp["agents"] == b_comp["agents"]:
         score += 1
 
-    if ca["props"] == cb["props"]:
+    if a_comp["props"] == b_comp["props"]:
         score += 1
 
-    if ca["negations"] == cb["negations"]:
+    if a_comp["negations"] == b_comp["negations"]:
         score += 1
 
     return score / total

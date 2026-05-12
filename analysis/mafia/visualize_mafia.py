@@ -4,12 +4,10 @@ import textwrap
 
 
 def _fact_to_text(fact):
-
     if fact is None:
         return "unknown"
 
     if fact.predicate == "role":
-
         return f"{fact.subject} is {fact.obj}"
 
     if fact.obj:
@@ -51,11 +49,8 @@ def draw_mafia_kripke_model(
     }
 
     for agent in model.agents:
-
         for (u, v) in model.relations[agent]:
-
             if u != v:
-
                 G.add_edge(
                     u,
                     v,
@@ -79,7 +74,6 @@ def draw_mafia_kripke_model(
     )
 
     fig = plt.figure(figsize=(18, 11))
-
     ax = fig.add_axes([0.05, 0.08, 0.62, 0.84])
 
     nx.draw_networkx_nodes(
@@ -99,7 +93,6 @@ def draw_mafia_kripke_model(
         ]
 
         if edges:
-
             nx.draw_networkx_edges(
                 G,
                 pos,
@@ -126,7 +119,6 @@ def draw_mafia_kripke_model(
     )
 
     for agent, color in agent_colors.items():
-
         ax.plot(
             [],
             [],
@@ -144,9 +136,7 @@ def draw_mafia_kripke_model(
     loop_lines = ["Reflexive edges:\n"]
 
     for w in model.worlds:
-
         agents = loops_by_world[w]
-
         if agents:
             loop_lines.append(
                 f"w{w}: {', '.join(agents)}"
@@ -173,11 +163,8 @@ def draw_mafia_kripke_model(
     prop_lines = ["Propositions:\n"]
 
     for prop in sorted(proposition_registry.propositions()):
-
         fact = proposition_registry.decode(prop)
-
         fact_text = _fact_to_text(fact)
-
         wrapped = textwrap.fill(
             fact_text,
             width=35

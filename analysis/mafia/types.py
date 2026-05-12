@@ -4,7 +4,6 @@ from typing import Optional
 
 @dataclass(frozen=True)
 class EpistemicFact:
-
     subject: str
     predicate: str
     obj: Optional[str] = None
@@ -22,13 +21,8 @@ class EpistemicFact:
 
 @dataclass
 class BeliefStatement:
-
     agent: str
-
     fact: Optional[EpistemicFact] = None
-
     confidence: float = 1.0
-
     nested_formula: Optional[str] = None
-
     source: str = "introspection"

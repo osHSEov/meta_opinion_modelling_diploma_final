@@ -69,6 +69,7 @@ class MetaOpinionDatasetGenerator:
         max_depth: int,
         ) -> bool:
         required = {"text", "agents", "propositions", "formulas", "depth"}
+        
         if not required.issubset(parsed.keys()):
             return False
 

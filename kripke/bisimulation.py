@@ -1,12 +1,12 @@
 from collections import defaultdict
 from kripke.model import KripkeModel
 
-
-
+# После бисимуляции могли все поломать
 def repair_kd45_frame(model: KripkeModel):
     for agent in model.agents:
         rel = set(model.relations[agent])
-
+        
+        # Аналогично как в enforcekd45
         changed = True
         while changed:
             changed = False
@@ -34,15 +34,13 @@ def repair_kd45_frame(model: KripkeModel):
 
         model.relations[agent] = rel
 
-
-
-
 def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
     worlds = model.worlds
     agents = model.agents
 
     partition = []
     val_to_block = {}
+    
     for w in worlds:
         val = frozenset(model.valuation.get(w, set()))
         if val not in val_to_block:
@@ -55,11 +53,15 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
     while changed:
         changed = False
         new_partition = []
+        
         for block in partition:
             sig_to_worlds = defaultdict(set)
+            
             for w in block:
                 sig = []
+                
                 for a in agents:
+                    
                     reachable_blocks = set()
                     for (u, v) in model.relations[a]:
                         if u == w:
@@ -67,7 +69,9 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
                                 if v in blk:
                                     reachable_blocks.add(idx)
                                     break
+                                
                     sig.append(frozenset(reachable_blocks))
+                    
                 sig = tuple(sig)
                 sig_to_worlds[sig].add(w)
 
@@ -81,6 +85,7 @@ def compute_bisimulation_quotient(model: KripkeModel) -> KripkeModel:
     block_to_new = {}
     new_worlds = []
     new_valuation = {}
+    
     for idx, block in enumerate(partition):
         key = frozenset(block)
         block_to_new[key] = idx

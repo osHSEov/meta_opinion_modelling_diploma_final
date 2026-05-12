@@ -1,5 +1,4 @@
 from typing import List
-
 from .types import EpistemicFact
 from .types import BeliefStatement
 
@@ -38,7 +37,6 @@ class MafiaBeliefExtractor:
 
             probe = r.get("probe_id")
 
-            # role_assessment
             if probe == "role_assessment":
 
                 if not isinstance(parsed, list):
@@ -47,12 +45,12 @@ class MafiaBeliefExtractor:
                 for item in parsed:
 
                     confidence = item.get("confidence", 0) / 100
-
+                    
+                    #Если агент не слишком уверен, то игнорим
                     if confidence < self.confidence_threshold:
                         continue
 
                     target = item.get("player")
-
                     guessed_role = item.get("guessed_role")
 
                     if not target or not guessed_role:

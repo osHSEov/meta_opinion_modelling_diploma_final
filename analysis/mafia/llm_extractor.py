@@ -1,14 +1,11 @@
 import json
-
 from services.llm_factory import build_llm_client
-
 from .types import BeliefStatement
 
 
 class LLMMetaBeliefExtractor:
 
     def __init__(self, config):
-
         self.client = build_llm_client(config)
 
     def extract(self, prompt):

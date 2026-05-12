@@ -1,0 +1,17 @@
+ollama
+requests
+pyyaml
+
+numpy
+scipy
+
+matplotlib
+networkx
+
+sentence-transformers
+
+typer
+
+tqdm
+
+pyvis
